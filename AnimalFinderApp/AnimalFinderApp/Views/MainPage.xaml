@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:AnimalFinderApp.Models"
+             xmlns:viewmodel="clr-namespace:AnimalFinderApp.ViewModels"
+             x:DataType="viewmodel:AnimalsViewModel"
+             x:Class="AnimalFinderApp.Views.MainPage"
+             Title="{Binding Title}">
+
+    <Grid ColumnDefinitions="*,*"
+          ColumnSpacing="5"
+          RowDefinitions="*, Auto">
+
+        <RefreshView Grid.ColumnSpan="2"
+                     Command="{Binding GetAnimalsCommand}"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     RefreshColor="{StaticResource Primary}">
+            <CollectionView ItemsSource="{Binding Animals}"
+                            SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <StackLayout VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 WidthRequest="150"
+                                 HeightRequest="150">
+                        <Image Source="no_data.png"
+                               HorizontalOptions="CenterAndExpand"
+                               VerticalOptions="CenterAndExpand"
+                               Aspect="AspectFill"/>
+                        <Label Text="No data to display"
+                               HorizontalOptions="Center"
+                               Style="{StaticResource MediumLabel}"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Animal">
+                        <Grid Padding="10">
+                            <Frame HeightRequest="120"
+                                   Padding="0"
+                                   Style="{StaticResource CardView}">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AnimalsViewModel}}, Path=GoToAnimalDetailsCommand}"/>
+                                </Frame.GestureRecognizers>
+                                <Grid Padding="0"
+                                      ColumnDefinitions="120, *">
+                                    <Image Aspect="AspectFill"
+                                           Source="{Binding Image}"
+                                           WidthRequest="120"
+                                           HeightRequest="120"/>
+
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Padding="10">
+                                        <Label Text="{Binding Name}"
+                                               Style="{StaticResource LargeLabel}"></Label>
+                                        <Label Text="{Binding Location}"
+                                               Style="{StaticResource MicroLabel}"></Label>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <Button Text="Get Animals"
+                Grid.Row="1"
+                Margin="8"
+                Command="{Binding GetAnimalsCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Style="{StaticResource ButtonOutline}"/>
+
+        <Button Text="Get Closest"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="8"
+                Command="{Binding GetClosestAnymalCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Style="{StaticResource ButtonOutline}"/>
+
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           HorizontalOptions="FillAndExpand"
+                           VerticalOptions="CenterAndExpand"
+                           Grid.RowSpan="2"
+                           Grid.ColumnSpan="2"/>
+    </Grid>
+
+</ContentPage>
